@@ -1,0 +1,44 @@
+/* Coffee Cup Image Styles */
+.coffee-image {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 10px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+}
+
+.small-coffee-sprite {
+    background-image: url('smallcup.png');
+    background-size: contain;
+}
+
+.medium-coffee-sprite {
+    background-image: url('medcup.png');
+    background-size: contain;
+}
+
+.large-coffee-sprite {
+    background-image: url('largecup1.png');
+    background-size: contain;
+}
+
+/* Animations for selected coffee cups */
+.coffee-option.selected .coffee-image {
+    animation: bounce 0.5s ease;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+/* Hide contract balance by default */
+#contract-balance-container {
+    display: none;
+}
+
+/* Show when wallet is connected */
+.wallet-connected #contract-balance-container {
+    display: block;
+}

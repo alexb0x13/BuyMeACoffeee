@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buy Me A Coffee</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Playfair+Display:wght@700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="coffee-cups.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>☕</text></svg>">
+</head>
+<body class="loading">
+    <!-- Video Background -->
+    <div class="video-background">
+        <video autoplay muted loop playsinline id="coffeeVideo">
+            <source src="videos/coffeehouse.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <div class="video-overlay"></div>
+    </div>
+    
+    <div class="container">
+        <h1 style="font-size: 5rem; font-family: 'Dancing Script', cursive; ">Buy Alex a Coffee</h1>
+        <div class="card">
+            <div class="status-container">
+                <p>Wallet: <span id="wallet-status">Not connected</span></p>
+                <p id="contract-balance-container">Contract Balance: <span id="contract-balance">0 ETH</span></p>
+            </div>
+            <div class="button-container">
+                <button id="connect-button" class="btn">
+    <svg width="20" height="20" viewBox="0 0 318.6 318.6" style="margin-right: 10px;">
+        <path fill="#E2761B" stroke="#E2761B" stroke-linecap="round" stroke-linejoin="round" stroke-width="5" d="M274.1 35.5l-99.5 73.9L193 65.8z"/>
+        <path fill="#E4761B" stroke="#E4761B" stroke-linecap="round" stroke-linejoin="round" stroke-width="5" d="M44.4 35.5L143.1 110l-19.6-44.2zM238.3 206.8l-26.6 31.9 56.7 15.6 16.3-45.1zM33.1 209.2l16.2 45.1 56.7-15.6-26.6-31.9zM103.6 138.2l-15.8 23.9 56.3 2.5-2-60.5zM214.9 138.2L212 104l-1.5 60.6 56.3-2.5zM106.8 246.6l33.8-16.5-29.2-22.8zM177.9 230.1l33.9 16.5-4.7-39.3z"/>
+        <path fill="#D7C1B3" stroke="#D7C1B3" stroke-linecap="round" stroke-linejoin="round" stroke-width="5" d="M211.8 246.6l-33.9-16.5 2.7 22.1-.3 9.3zM106.8 246.6l31.5 14.9-.2-9.3 2.5-22.1z"/>
+        <path fill="#233447" stroke="#233447" stroke-linecap="round" stroke-linejoin="round" stroke-width="5" d="M138.8 193.5l-28.2-8.3 19.9-9.1zM179.7 193.5l8.3-17.4 20 9.1z"/>
+        <path fill="#CD6116" stroke="#CD6116" stroke-linecap="round" stroke-linejoin="round" stroke-width="5" d="M106.8 246.6l4.7-39.3-30.3.9zM207.1 207.3l4.7 39.3 25.6-38.4zM230.8 162.1l-56.3 2.5 5.2 28.9 8.3-17.4 20 9.1zM110.6 185.2l20-9.1 8.3 17.4 5.2-28.9-56.3-2.5z"/>
+        <path fill="#E4751F" stroke="#E4751F" stroke-linecap="round" stroke-linejoin="round" stroke-width="5" d="M87.8 162.1l23.6 46-.8-22.9zM208.1 185.2l-1 22.9 23.7-46zM144.1 164.6l-5.2 28.9 6.6 34.1 1.5-45zM174.6 164.6l2.9 17.3 1.2 17.6 6.6-34.1z"/>
+        <path fill="#F6851B" stroke="#F6851B" stroke-linecap="round" stroke-linejoin="round" stroke-width="5" d="M179.8 193.5l-6.6 34.1 4.8 3.3 29.2-22.8 1-22.9zM110.6 185.2l.8 22.9 29.2 22.8 4.8-3.3-6.6-34.1z"/>
+        <path fill="#C0AD9E" stroke="#C0AD9E" stroke-linecap="round" stroke-linejoin="round" stroke-width="5" d="M180.3 262l.3-9.3-2.5-2.2h-37.7l-2.3 2.2.2 9.3-31.5-14.9 11 9 22.3 15.5h38.3l22.4-15.5 11-9z"/>
+        <path fill="#161616" stroke="#161616" stroke-linecap="round" stroke-linejoin="round" stroke-width="5" d="M177.9 230.1l-4.8-3.3h-27.7l-4.8 3.3-2.5 22.1 2.3-2.2h37.7l2.5 2.2z"/>
+        <path fill="#763D16" stroke="#763D16" stroke-linecap="round" stroke-linejoin="round" stroke-width="5" d="M278.3 114.2l8.5-40.8-12.8-38.9-97.6 72.5 37.6 31.7 53 15.5 11.7-13.6-5.1-3.6 8-7.3-6.2-4.8 8-6.1-5.3-4zM31.8 73.4l8.5 40.8-5.4 4 8 6.1-6.1 4.8 8 7.3-5.1 3.6 11.7 13.6 53-15.5 37.6-31.7-97.6-72.5z"/>
+        <path fill="#F6851B" stroke="#F6851B" stroke-linecap="round" stroke-linejoin="round" stroke-width="5" d="M267.2 153.5l-53-15.5 16.1 24.6-23.7 46 31.2-.4h46.5zM104.5 138l-53 15.5-17.4 55.2 46.4-.4 23.9-46zM174.3 164.6l3.6-28.3 1.6-13.1h-73.6l1.6 13.1 3.6 28.3 1.2 4.2.1 12.9 1.5 45h27.7l1.5-45 .1-12.9z"/>
+    </svg>
+    Connect Wallet
+</button>
+                
+                <div class="coffee-selection-container">
+                    <h3>Select Coffee Size</h3>
+                    <div class="coffee-options">
+                        <div class="coffee-option" id="small-coffee">
+                            <div class="coffee-image small-coffee-sprite"></div>
+                            <div class="coffee-details">
+                                <h4>Small</h4>
+                                <p>0.001 ETH ($2.00)</p>
+                            </div>
+                        </div>
+                        
+                        <div class="coffee-option" id="medium-coffee">
+                            <div class="coffee-image medium-coffee-sprite"></div>
+                            <div class="coffee-details">
+                                <h4>Medium</h4>
+                                <p>0.003 ETH ($6.00)</p>
+                            </div>
+                        </div>
+                        
+                        <div class="coffee-option" id="large-coffee">
+                            <div class="coffee-image large-coffee-sprite"></div>
+                            <div class="coffee-details">
+                                <h4>Large</h4>
+                                <p>0.005 ETH ($10.00)</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="selected-coffee">Selected: Small (0.001 ETH | $2.00)</div>
+                    
+                    <div class="quantity-container">
+                        <h4>How many?</h4>
+                        <div class="quantity-controls">
+                            <button id="decrease-coffee" class="quantity-btn" disabled>-</button>
+                            <span id="coffee-quantity">1</span>
+                            <button id="increase-coffee" class="quantity-btn" disabled>+</button>
+                        </div>
+                        <div class="quantity-total">
+                            <span>Total: </span>
+                            <span id="total-price">0.001 ETH | $2.00</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <button id="buy-coffee-button" class="btn" disabled>Buy Coffee</button>
+                <div id="owner-controls" style="display: none;">
+                    <button id="get-balance-button" class="btn">Get Balance</button>
+                    <button id="withdraw-button" class="btn">Withdraw</button>
+                </div>
+            </div>
+            <div id="transaction-status"></div>
+        </div>
+    </div>
+
+    <!-- Thank You Section -->
+    <div class="thank-you-section">
+        <div class="container">
+            <div class="card">
+                <h2>Thank You for the support beans! ❤️</h2>
+                <p>The bitter taste often associated with "burnt" coffee isn't usually from the brewing process itself, but rather from using water that's too hot or brewing for too long. These pull out undesirable compounds, leading to that harsh flavor.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>
+    <script src="config.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

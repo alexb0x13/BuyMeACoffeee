@@ -45,13 +45,21 @@ const CONTRACT_ABI = [
     }
 ];
 
-// Configuration is imported from config.js
+// Configuration - supports both Vercel environment variables and local config.js
+const config = window.CONFIG || {
+    // Fallback to Vercel environment variables if available
+    MAINNET_CHAIN_ID: typeof process !== 'undefined' && process.env.NEXT_PUBLIC_MAINNET_CHAIN_ID || '0x1',
+    MAINNET_RPC_URL: typeof process !== 'undefined' && process.env.NEXT_PUBLIC_MAINNET_RPC_URL || '',
+    CONTRACT_ADDRESS: typeof process !== 'undefined' && process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || '0xA14B62b2EfC2fdA913A6c025705432c6B35c6Cf0',
+    OWNER_ADDRESS: typeof process !== 'undefined' && process.env.NEXT_PUBLIC_OWNER_ADDRESS || '0x1A620655adbd8a4A25bF5F471a3D8F0a5d946570'
+};
+
 const { 
     MAINNET_CHAIN_ID, 
     MAINNET_RPC_URL,
     CONTRACT_ADDRESS: contractAddress,
     OWNER_ADDRESS: ownerAddress 
-} = window.CONFIG || {};
+} = config;
 
 // Current connected account
 let currentAccount = null;
@@ -421,15 +429,28 @@ async function init() {
 
 // Check if connected to Ethereum Mainnet
 async function checkNetwork() {
-    if (!window.ethereum) return false;
+    if (!window.ethereum) {
+        console.error('MetaMask not detected');
+        return false;
+    }
+    
+    // Ensure MAINNET_CHAIN_ID is properly formatted
+    const formattedChainId = typeof MAINNET_CHAIN_ID === 'string' ? 
+        MAINNET_CHAIN_ID.startsWith('0x') ? 
+            MAINNET_CHAIN_ID : 
+            `0x${parseInt(MAINNET_CHAIN_ID).toString(16)}` : 
+        `0x${MAINNET_CHAIN_ID.toString(16)}`;
     
     try {
         const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-        if (chainId !== MAINNET_CHAIN_ID) {
+        console.log('Current chain ID:', chainId, 'Expected:', formattedChainId);
+        
+        if (chainId !== formattedChainId) {
             try {
+                // Try to switch to the chain
                 await window.ethereum.request({
                     method: 'wallet_switchEthereumChain',
-                    params: [{ chainId: MAINNET_CHAIN_ID }],
+                    params: [{ chainId: formattedChainId }],
                 });
                 return true;
             } catch (switchError) {
@@ -439,7 +460,7 @@ async function checkNetwork() {
                         await window.ethereum.request({
                             method: 'wallet_addEthereumChain',
                             params: [{
-                                chainId: MAINNET_CHAIN_ID,
+                                chainId: formattedChainId,
                                 chainName: 'Ethereum Mainnet',
                                 nativeCurrency: {
                                     name: 'Ethereum',
@@ -453,16 +474,19 @@ async function checkNetwork() {
                         return true;
                     } catch (addError) {
                         console.error('Error adding Ethereum Mainnet:', addError);
+                        showTransactionStatus('Failed to add Ethereum network. Please add it manually in MetaMask.', 'error');
                         return false;
                     }
                 }
                 console.error('Error switching to Ethereum Mainnet:', switchError);
+                showTransactionStatus('Failed to switch to Ethereum Mainnet. Please switch manually in MetaMask.', 'error');
                 return false;
             }
         }
         return true;
     } catch (error) {
         console.error('Error checking network:', error);
+        showTransactionStatus('Error checking network. Please refresh and try again.', 'error');
         return false;
     }
 }

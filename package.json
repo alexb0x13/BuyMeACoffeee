@@ -1,0 +1,19 @@
+{
+  "name": "buy-me-a-coffee",
+  "version": "1.0.0",
+  "description": "Buy Me A Coffee dApp with cryptocurrency",
+  "main": "app.js",
+  "scripts": {
+    "prebuild": "node build-config.js",
+    "build": "echo 'Static build completed'"
+  },
+  "keywords": [
+    "ethereum",
+    "web3",
+    "dapp",
+    "coffee"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {}
+}

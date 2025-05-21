@@ -665,15 +665,27 @@ async function buyCoffee() {
         console.log(`Wei amount (decimal): ${bigValue}`);
         console.log(`Wei amount (hex): ${weiValueHex}`);
         
-        // Add specific gas parameters since MetaMask has trouble estimating
-        // This is similar to what Remix would create automatically
+        // Map the coffee size to the enum value expected by the contract
+        const coffeeSizeEnum = selectedCoffeeSize === 'small' ? 0 : 
+                              selectedCoffeeSize === 'medium' ? 1 : 2;
+        
+        // Create the function signature for buyCoffeeSimple(uint8,uint256)
+        // This is the first 4 bytes of the keccak256 hash of the function signature
+        const functionSignature = '0x' + createFunctionSignature('buyCoffeeSimple(uint8,uint256)');
+        
+        // This solution is more compatible - we'll use the legacy function
+        // which just requires sending ETH with no parameters
         const tx = {
             from: currentAccount,
             to: contractAddress,
             value: weiValueHex,
-            gas: '0x55F0', // Approximately 22,000 gas - standard for simple ETH transfers
-            gasPrice: '0x' + (5000000000).toString(16) // 5 Gwei, reasonable price on Sepolia
+            // Let MetaMask handle gas estimation
         };
+        
+        // Log what we're doing
+        console.log(`Buying ${currentQuantity} ${selectedCoffeeSize} coffee(s)`);
+        console.log(`Sending ${totalPrice} ETH to ${contractAddress}`);
+        console.log(`From account: ${currentAccount}`);
         
         console.log("Transaction:", tx);
         
@@ -819,6 +831,8 @@ function createFunctionSignature(functionName) {
     // For now, we're using a few hard-coded signatures for our functions
     if (functionName === "buyCoffee()") {
         return "0x72db799f"; // keccak256("buyCoffee()").slice(0, 8)
+    } else if (functionName === "buyCoffeeSimple(uint8,uint256)") {
+        return "0x58f52327"; // keccak256("buyCoffeeSimple(uint8,uint256)").slice(0, 8)
     } else if (functionName === "getBalance()") {
         return "0x12065fe0"; // keccak256("getBalance()").slice(0, 8)
     } else if (functionName === "withdraw()") {

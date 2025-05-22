@@ -665,32 +665,24 @@ async function buyCoffee() {
         console.log(`Wei amount (decimal): ${bigValue}`);
         console.log(`Wei amount (hex): ${weiValueHex}`);
         
-        // Try using the ABI from the top of the file for proper encoding
-        // Instead of manual encoding, we'll use a more reliable approach
-        
         // Convert coffee size from string to uint8 for the contract (Small=0, Medium=1, Large=2)
         const coffeeSize = selectedCoffeeSize === 'small' ? 0 : selectedCoffeeSize === 'medium' ? 1 : 2;
         
-        // Method 1: Simple manual encoding (improved)
-        // Important: In Solidity, all parameters need to be padded to 32 bytes (64 hex chars)
-        // The function selector for buyCoffeeSimple(uint8,uint256)
-        const functionSelector = '0x7370f50d'; // Manually verified keccak256("buyCoffeeSimple(uint8,uint256)").slice(0,10)
+        // Much simpler approach - use the legacy buyCoffee() function that requires no parameters
+        // This function simply accepts ETH with no encoding necessary
         
-        // For uint8, we need to pad the value to 32 bytes, right-aligned
-        const sizeHex = '0'.repeat(62) + coffeeSize.toString(16).padStart(2, '0');
+        console.log(`Calling basic buyCoffee function with ${totalPrice} ETH`);
+        console.log(`Contract address: ${contractAddress}`);
         
-        // For uint256, also pad to 32 bytes, right-aligned
-        const quantityHex = currentQuantity.toString(16).padStart(64, '0');
+        // Debug transaction details
+        console.log(`Current account: ${currentAccount}`);
+        console.log(`Coffee size: ${coffeeSize} (${selectedCoffeeSize})`);
+        console.log(`Quantity: ${currentQuantity}`);
+        console.log(`Total price in ETH: ${totalPrice}`);
+        console.log(`Total price in Wei (hex): ${weiValueHex}`);
         
-        // Complete function call data
-        const data = functionSelector + sizeHex + quantityHex;
-        
-        // Debug the data being sent
-        console.log(`Calling buyCoffeeSimple with size=${coffeeSize}, quantity=${currentQuantity}`);
-        console.log(`Function selector: ${functionSelector}`);
-        console.log(`Size parameter (hex): ${sizeHex}`);
-        console.log(`Quantity parameter (hex): ${quantityHex}`);
-        console.log(`Complete function data: ${data}`);
+        // IMPORTANT: Since we're having issues with encoding, let's try the legacy function
+        // which doesn't need parameters, it just accepts ETH
         
         // Add specific gas parameters since MetaMask has trouble estimating
         // This is similar to what Remix would create automatically
@@ -698,8 +690,9 @@ async function buyCoffee() {
             from: currentAccount,
             to: contractAddress,
             value: weiValueHex,
-            data: data, // Add the function call data
-            gas: '0x186A0', // Approximately 100,000 gas - increased for contract function call
+            // No data field needed for the legacy buyCoffee() function
+            // It works with a simple ETH transfer
+            gas: '0x186A0', // Approximately 100,000 gas for contract interaction
             gasPrice: '0x' + (5000000000).toString(16) // 5 Gwei, reasonable price on Sepolia
         };
         

@@ -665,13 +665,35 @@ async function buyCoffee() {
         console.log(`Wei amount (decimal): ${bigValue}`);
         console.log(`Wei amount (hex): ${weiValueHex}`);
         
+        // Convert coffee size from string to uint8 for the contract (Small=0, Medium=1, Large=2)
+        const coffeeSize = selectedCoffeeSize === 'small' ? 0 : selectedCoffeeSize === 'medium' ? 1 : 2;
+        
+        // Create function data for buyCoffeeSimple(uint8 _size, uint256 _quantity)
+        // Function selector is the first 4 bytes of the function signature hash
+        const functionSelector = '0x8a9c9520'; // keccak256("buyCoffeeSimple(uint8,uint256)")
+        
+        // Encode parameters - both need to be padded to 32 bytes (64 hex characters)
+        // For the size (uint8), we need to pad it to 32 bytes
+        const sizeHex = coffeeSize.toString(16).padStart(64, '0');
+        // For the quantity (uint256), we also need to pad it to 32 bytes
+        const quantityHex = currentQuantity.toString(16).padStart(64, '0');
+        
+        // Complete function call data = selector + encoded parameters
+        const data = functionSelector + sizeHex + quantityHex;
+        
+        console.log(`Function selector: ${functionSelector}`);
+        console.log(`Encoded size (${coffeeSize}): ${sizeHex}`);
+        console.log(`Encoded quantity (${currentQuantity}): ${quantityHex}`);
+        console.log(`Complete function data: ${data}`);
+        
         // Add specific gas parameters since MetaMask has trouble estimating
         // This is similar to what Remix would create automatically
         const tx = {
             from: currentAccount,
             to: contractAddress,
             value: weiValueHex,
-            gas: '0x55F0', // Approximately 22,000 gas - standard for simple ETH transfers
+            data: data, // Add the function call data
+            gas: '0x186A0', // Approximately 100,000 gas - increased for contract function call
             gasPrice: '0x' + (5000000000).toString(16) // 5 Gwei, reasonable price on Sepolia
         };
         

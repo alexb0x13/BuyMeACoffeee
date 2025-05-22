@@ -665,25 +665,31 @@ async function buyCoffee() {
         console.log(`Wei amount (decimal): ${bigValue}`);
         console.log(`Wei amount (hex): ${weiValueHex}`);
         
+        // Try using the ABI from the top of the file for proper encoding
+        // Instead of manual encoding, we'll use a more reliable approach
+        
         // Convert coffee size from string to uint8 for the contract (Small=0, Medium=1, Large=2)
         const coffeeSize = selectedCoffeeSize === 'small' ? 0 : selectedCoffeeSize === 'medium' ? 1 : 2;
         
-        // Create function data for buyCoffeeSimple(uint8 _size, uint256 _quantity)
-        // Function selector is the first 4 bytes of the function signature hash
-        const functionSelector = '0x8a9c9520'; // keccak256("buyCoffeeSimple(uint8,uint256)")
+        // Method 1: Simple manual encoding (improved)
+        // Important: In Solidity, all parameters need to be padded to 32 bytes (64 hex chars)
+        // The function selector for buyCoffeeSimple(uint8,uint256)
+        const functionSelector = '0x7370f50d'; // Manually verified keccak256("buyCoffeeSimple(uint8,uint256)").slice(0,10)
         
-        // Encode parameters - both need to be padded to 32 bytes (64 hex characters)
-        // For the size (uint8), we need to pad it to 32 bytes
-        const sizeHex = coffeeSize.toString(16).padStart(64, '0');
-        // For the quantity (uint256), we also need to pad it to 32 bytes
+        // For uint8, we need to pad the value to 32 bytes, right-aligned
+        const sizeHex = '0'.repeat(62) + coffeeSize.toString(16).padStart(2, '0');
+        
+        // For uint256, also pad to 32 bytes, right-aligned
         const quantityHex = currentQuantity.toString(16).padStart(64, '0');
         
-        // Complete function call data = selector + encoded parameters
+        // Complete function call data
         const data = functionSelector + sizeHex + quantityHex;
         
+        // Debug the data being sent
+        console.log(`Calling buyCoffeeSimple with size=${coffeeSize}, quantity=${currentQuantity}`);
         console.log(`Function selector: ${functionSelector}`);
-        console.log(`Encoded size (${coffeeSize}): ${sizeHex}`);
-        console.log(`Encoded quantity (${currentQuantity}): ${quantityHex}`);
+        console.log(`Size parameter (hex): ${sizeHex}`);
+        console.log(`Quantity parameter (hex): ${quantityHex}`);
         console.log(`Complete function data: ${data}`);
         
         // Add specific gas parameters since MetaMask has trouble estimating

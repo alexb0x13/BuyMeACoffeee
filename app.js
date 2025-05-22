@@ -258,6 +258,9 @@ function initVideo() {
         document.body.classList.remove('loading');
         document.body.classList.add('loaded');
     }
+    // Coffee size elements
+    const smallCoffee = document.getElementById('small-coffee');
+    const mediumCoffee = document.getElementById('medium-coffee');
     const largeCoffee = document.getElementById('large-coffee');
     const selectedCoffeeText = document.getElementById('selected-coffee');
     
@@ -267,10 +270,16 @@ function initVideo() {
     const decreaseBtn = document.getElementById('decrease-coffee');
     const totalPrice = document.getElementById('total-price');
     
-    // Add event listeners for coffee size buttons
-    smallCoffee.addEventListener('click', () => selectCoffeeSize('small'));
-    mediumCoffee.addEventListener('click', () => selectCoffeeSize('medium'));
-    largeCoffee.addEventListener('click', () => selectCoffeeSize('large'));
+    // Add event listeners for coffee size buttons (only if elements exist)
+    if (smallCoffee) {
+        smallCoffee.addEventListener('click', () => selectCoffeeSize('small'));
+    }
+    if (mediumCoffee) {
+        mediumCoffee.addEventListener('click', () => selectCoffeeSize('medium'));
+    }
+    if (largeCoffee) {
+        largeCoffee.addEventListener('click', () => selectCoffeeSize('large'));
+    }
     
     // Add event listeners for quantity buttons
     increaseBtn.addEventListener('click', increaseCoffeeQuantity);
@@ -684,17 +693,16 @@ async function buyCoffee() {
         // IMPORTANT: Since we're having issues with encoding, let's try the legacy function
         // which doesn't need parameters, it just accepts ETH
         
-        // Add specific gas parameters since MetaMask has trouble estimating
-        // This is similar to what Remix would create automatically
+        // SUPER SIMPLIFIED TRANSACTION - absolute minimum parameters
+        // Let MetaMask handle gas estimation and other details
         const tx = {
             from: currentAccount,
             to: contractAddress,
-            value: weiValueHex,
-            // No data field needed for the legacy buyCoffee() function
-            // It works with a simple ETH transfer
-            gas: '0x186A0', // Approximately 100,000 gas for contract interaction
-            gasPrice: '0x' + (5000000000).toString(16) // 5 Gwei, reasonable price on Sepolia
+            value: weiValueHex
+            // No gas, gasPrice, data - let MetaMask handle it all
         };
+        
+        console.log('Simplified transaction parameters:', JSON.stringify(tx, null, 2));
         
         console.log("Transaction:", tx);
         

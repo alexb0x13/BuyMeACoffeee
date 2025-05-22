@@ -286,8 +286,12 @@ function initVideo() {
     decreaseBtn.addEventListener('click', decreaseCoffeeQuantity);
     
     // Add event listeners for contract buttons
-    connectButton.addEventListener('click', connectWallet);
-    buyCoffeeButton.addEventListener('click', buyCoffee);
+    // Note: connectButton is added in initDomElements already
+    // Get the buy coffee button properly
+    const buyCoffeeButton = buyButton || document.getElementById('buy-coffee-button');
+    if (buyCoffeeButton) {
+        buyCoffeeButton.addEventListener('click', buyCoffee);
+    }
     
     // Add event listeners for owner-only buttons
     getBalanceButton.addEventListener('click', () => {
@@ -698,11 +702,14 @@ async function buyCoffee() {
         const tx = {
             from: currentAccount,
             to: contractAddress,
-            value: weiValueHex
-            // No gas, gasPrice, data - let MetaMask handle it all
+            value: weiValueHex,
+            // Add data for 'buyCoffee()' function - empty selector '0x'  
+            // will trigger fallback function
+            data: '0x'
         };
         
         console.log('Simplified transaction parameters:', JSON.stringify(tx, null, 2));
+        console.log('Attempting to send a direct ETH transfer to contract...');
         
         console.log("Transaction:", tx);
         

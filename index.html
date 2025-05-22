@@ -109,8 +109,41 @@
         </div>
     </div>
 
-    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>
-    <script src="config.js"></script>
-    <script src="app.js"></script>
+    <!-- Fallback for ethers.js if CDN fails -->
+    <script>
+        // Handle ethers.js loading
+        function loadScript(src, callback) {
+            const script = document.createElement('script');
+            script.src = src;
+            script.onload = callback;
+            script.onerror = function() {
+                console.warn(`Failed to load ${src}, using fallback if available`);
+                if (callback) callback();
+            };
+            document.body.appendChild(script);
+        }
+        
+        // Use local ethers.js instead of CDN
+        loadScript('ethers.min.js', function() {
+            // After ethers loads (or fails), try to load config
+            try {
+                // Create a global CONFIG object if config.js is missing
+                if (typeof window.CONFIG === 'undefined') {
+                    console.log('config.js not found, using default configuration');
+                    window.CONFIG = {
+                        MAINNET_CHAIN_ID: '0x1',
+                        MAINNET_RPC_URL: 'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161', // Public Infura endpoint
+                        CONTRACT_ADDRESS: '0xA14B62b2EfC2fdA913A6c025705432c6B35c6Cf0',
+                        OWNER_ADDRESS: '0x1A620655adbd8a4A25bF5F471a3D8F0a5d946570'
+                    };
+                }
+            } catch (e) {
+                console.error('Error setting up configuration:', e);
+            }
+            
+            // Finally load the main app.js
+            loadScript('app.js');
+        });
+    </script>
 </body>
 </html>

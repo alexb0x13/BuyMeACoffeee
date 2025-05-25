@@ -109,58 +109,22 @@
         </div>
     </div>
 
-    <!-- Configuration and script loading -->
+    <!-- Simple global configuration for production -->  
     <script>
-        // IMPORTANT: Default configuration for production
-        // This is used when config.js is not available
         window.CONFIG = {
-            // Network Configuration
             MAINNET_CHAIN_ID: '0x1',
-            // Uses MetaMask's provider by default (no RPC URL needed)
             MAINNET_RPC_URL: '',
-            
-            // Contract Addresses
             CONTRACT_ADDRESS: '0xA14B62b2EfC2fdA913A6c025705432c6B35c6Cf0',
             OWNER_ADDRESS: '0x1A620655adbd8a4A25bF5F471a3D8F0a5d946570',
-            
-            // Other settings
             DEFAULT_GAS_LIMIT: '200000',
-            GAS_PRICE: '5000000000' // 5 Gwei
+            GAS_PRICE: '5000000000' 
         };
     </script>
-    
-    <!-- Load ethers.js -->
-    <script src="ethers.min.js"></script>
-    
-    <!-- Try to load config.js but it's optional -->
-    <script>
-        // Try to load config.js (only for local development)
-        (function() {
-            try {
-                const script = document.createElement('script');
-                script.src = 'config.js';
-                script.onerror = function() {
-                    console.log('config.js not found, using default configuration');
-                    // config.js not found, continue with default CONFIG
-                    loadMainScript();
-                };
-                script.onload = function() {
-                    console.log('config.js loaded successfully');
-                    loadMainScript();
-                };
-                document.head.appendChild(script);
-            } catch (e) {
-                console.error('Error loading config:', e);
-                loadMainScript();
-            }
-            
-            function loadMainScript() {
-                // Load the main application script
-                const appScript = document.createElement('script');
-                appScript.src = 'app.js';
-                document.head.appendChild(appScript);
-            }
-        })();
-    </script>
+
+    <!-- Load ethers.js directly -->
+    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script>
+
+    <!-- Directly load app.js -->
+    <script src="app.js"></script>
 </body>
 </html>

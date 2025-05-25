@@ -697,15 +697,34 @@ async function buyCoffee() {
         // IMPORTANT: Since we're having issues with encoding, let's try the legacy function
         // which doesn't need parameters, it just accepts ETH
         
-        // SUPER SIMPLIFIED TRANSACTION - absolute minimum parameters
-        // Let MetaMask handle gas estimation and other details
+        // Create a properly formatted transaction to call buyCoffeeSimple(uint8,uint256)
+        // Function signature: buyCoffeeSimple(uint8 _size, uint256 _quantity)
+        // Function selector: 0x143c7161 (first 4 bytes of keccak256 hash of the function signature)
+        
+        // 1. Create the function selector
+        const functionSelector = '0x143c7161'; // buyCoffeeSimple(uint8,uint256)
+        
+        // 2. Encode the parameters
+        // coffeeSize needs to be padded to 32 bytes
+        const encodedCoffeeSize = coffeeSize.toString(16).padStart(64, '0');
+        // quantity needs to be padded to 32 bytes
+        const encodedQuantity = parseInt(currentQuantity).toString(16).padStart(64, '0');
+        
+        // 3. Combine function selector and encoded parameters
+        const data = `${functionSelector}${encodedCoffeeSize}${encodedQuantity}`;
+        
+        console.log('Function selector:', functionSelector);
+        console.log('Encoded coffee size:', encodedCoffeeSize);
+        console.log('Encoded quantity:', encodedQuantity);
+        console.log('Complete data:', data);
+        
+        // 4. Create the transaction object
         const tx = {
             from: currentAccount,
             to: contractAddress,
             value: weiValueHex,
-            // Add data for 'buyCoffee()' function - empty selector '0x'  
-            // will trigger fallback function
-            data: '0x'
+            data: data,
+            // Let MetaMask handle gas estimation
         };
         
         console.log('Simplified transaction parameters:', JSON.stringify(tx, null, 2));

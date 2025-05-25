@@ -109,40 +109,68 @@
         </div>
     </div>
 
-    <!-- Fallback for ethers.js if CDN fails -->
+    <!-- Load scripts in the correct order with fallbacks -->
     <script>
-        // Handle ethers.js loading
-        function loadScript(src, callback) {
+        // Set up configuration before loading app.js
+        // This will be used if config.js is missing in production
+        window.CONFIG = {
+            // Network Configuration
+            MAINNET_CHAIN_ID: '0x1',
+            // Use MetaMask's provider by default (no RPC URL needed)
+            // Only fall back to a public endpoint if needed
+            MAINNET_RPC_URL: '', // Will primarily use MetaMask's connection
+            
+            // Contract Addresses
+            CONTRACT_ADDRESS: '0xA14B62b2EfC2fdA913A6c025705432c6B35c6Cf0',
+            OWNER_ADDRESS: '0x1A620655adbd8a4A25bF5F471a3D8F0a5d946570',
+            
+            // Other settings
+            DEFAULT_GAS_LIMIT: '200000',
+            GAS_PRICE: '5000000000' // 5 Gwei
+        };
+
+        // Helper to load scripts
+        function loadScript(src, callback, errorCallback) {
+            console.log('Loading script:', src);
             const script = document.createElement('script');
             script.src = src;
             script.onload = callback;
-            script.onerror = function() {
-                console.warn(`Failed to load ${src}, using fallback if available`);
+            script.onerror = errorCallback || function() {
+                console.warn(`Failed to load ${src}`);
                 if (callback) callback();
             };
-            document.body.appendChild(script);
+            document.head.appendChild(script);
         }
-        
-        // Use local ethers.js instead of CDN
-        loadScript('ethers.min.js', function() {
-            // After ethers loads (or fails), try to load config
-            try {
-                // Create a global CONFIG object if config.js is missing
-                if (typeof window.CONFIG === 'undefined') {
-                    console.log('config.js not found, using default configuration');
-                    window.CONFIG = {
-                        MAINNET_CHAIN_ID: '0x1',
-                        MAINNET_RPC_URL: 'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161', // Public Infura endpoint
-                        CONTRACT_ADDRESS: '0xA14B62b2EfC2fdA913A6c025705432c6B35c6Cf0',
-                        OWNER_ADDRESS: '0x1A620655adbd8a4A25bF5F471a3D8F0a5d946570'
-                    };
-                }
-            } catch (e) {
-                console.error('Error setting up configuration:', e);
-            }
+
+        // Script loading sequence
+        // 1. Load ethers.js from CDN
+        loadScript('https://cdn.ethers.io/lib/ethers-5.2.umd.min.js', function() {
+            console.log('Ethers.js loaded from CDN');
             
-            // Finally load the main app.js
-            loadScript('app.js');
+            // 2. Try to load config.js (which might not exist in production)
+            loadScript('config.js', function() {
+                console.log('config.js loaded successfully');
+                
+                // 3. Finally load app.js
+                loadScript('app.js');
+            }, function() {
+                console.log('config.js not found, using default configuration');
+                // Still load app.js even if config.js fails
+                loadScript('app.js');
+            });
+        }, function() {
+            console.error('Failed to load Ethers.js from CDN');
+            // Try local fallback for ethers.js
+            loadScript('ethers.min.js', function() {
+                console.log('Ethers.js loaded from local fallback');
+                
+                // Try to load config.js
+                loadScript('config.js', function() {
+                    loadScript('app.js');
+                }, function() {
+                    loadScript('app.js');
+                });
+            });
         });
     </script>
 </body>

@@ -121,8 +121,17 @@
         };
     </script>
 
-    <!-- Load ethers.js directly -->
-    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script>
+    <!-- Load ethers.js from reliable CDN sources (with fallbacks) -->
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"
+            integrity="sha256-3HnEtTkTtZ+FHmgKF0GXoZNMmQrwGJmZRTpaYqN4BwY="
+            crossorigin="anonymous"></script>
+    <script>
+        // Fallback in case the CDN fails
+        if (typeof ethers === 'undefined') {
+            console.log('Primary ethers.js CDN failed, loading fallback...');
+            document.write('<script src="https://unpkg.com/ethers@5.7.2/dist/ethers.umd.min.js"><\/script>');
+        }
+    </script>
 
     <!-- Directly load app.js -->
     <script src="app.js"></script>

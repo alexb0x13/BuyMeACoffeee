@@ -109,16 +109,15 @@
         </div>
     </div>
 
-    <!-- Load scripts in the correct order with fallbacks -->
+    <!-- Configuration and script loading -->
     <script>
-        // Set up configuration before loading app.js
-        // This will be used if config.js is missing in production
+        // IMPORTANT: Default configuration for production
+        // This is used when config.js is not available
         window.CONFIG = {
             // Network Configuration
             MAINNET_CHAIN_ID: '0x1',
-            // Use MetaMask's provider by default (no RPC URL needed)
-            // Only fall back to a public endpoint if needed
-            MAINNET_RPC_URL: '', // Will primarily use MetaMask's connection
+            // Uses MetaMask's provider by default (no RPC URL needed)
+            MAINNET_RPC_URL: '',
             
             // Contract Addresses
             CONTRACT_ADDRESS: '0xA14B62b2EfC2fdA913A6c025705432c6B35c6Cf0',
@@ -128,50 +127,40 @@
             DEFAULT_GAS_LIMIT: '200000',
             GAS_PRICE: '5000000000' // 5 Gwei
         };
-
-        // Helper to load scripts
-        function loadScript(src, callback, errorCallback) {
-            console.log('Loading script:', src);
-            const script = document.createElement('script');
-            script.src = src;
-            script.onload = callback;
-            script.onerror = errorCallback || function() {
-                console.warn(`Failed to load ${src}`);
-                if (callback) callback();
-            };
-            document.head.appendChild(script);
-        }
-
-        // Script loading sequence
-        // 1. Load ethers.js from CDN
-        loadScript('https://cdn.ethers.io/lib/ethers-5.2.umd.min.js', function() {
-            console.log('Ethers.js loaded from CDN');
+    </script>
+    
+    <!-- Load ethers.js -->
+    <script src="ethers.min.js"></script>
+    
+    <!-- Try to load config.js but it's optional -->
+    <script>
+        // Try to load config.js (only for local development)
+        (function() {
+            try {
+                const script = document.createElement('script');
+                script.src = 'config.js';
+                script.onerror = function() {
+                    console.log('config.js not found, using default configuration');
+                    // config.js not found, continue with default CONFIG
+                    loadMainScript();
+                };
+                script.onload = function() {
+                    console.log('config.js loaded successfully');
+                    loadMainScript();
+                };
+                document.head.appendChild(script);
+            } catch (e) {
+                console.error('Error loading config:', e);
+                loadMainScript();
+            }
             
-            // 2. Try to load config.js (which might not exist in production)
-            loadScript('config.js', function() {
-                console.log('config.js loaded successfully');
-                
-                // 3. Finally load app.js
-                loadScript('app.js');
-            }, function() {
-                console.log('config.js not found, using default configuration');
-                // Still load app.js even if config.js fails
-                loadScript('app.js');
-            });
-        }, function() {
-            console.error('Failed to load Ethers.js from CDN');
-            // Try local fallback for ethers.js
-            loadScript('ethers.min.js', function() {
-                console.log('Ethers.js loaded from local fallback');
-                
-                // Try to load config.js
-                loadScript('config.js', function() {
-                    loadScript('app.js');
-                }, function() {
-                    loadScript('app.js');
-                });
-            });
-        });
+            function loadMainScript() {
+                // Load the main application script
+                const appScript = document.createElement('script');
+                appScript.src = 'app.js';
+                document.head.appendChild(appScript);
+            }
+        })();
     </script>
 </body>
 </html>

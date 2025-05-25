@@ -50,7 +50,7 @@ const config = window.CONFIG || {
     // Fallback to Vercel environment variables if available
     MAINNET_CHAIN_ID: typeof process !== 'undefined' && process.env.NEXT_PUBLIC_MAINNET_CHAIN_ID || '0x1',
     MAINNET_RPC_URL: typeof process !== 'undefined' && process.env.NEXT_PUBLIC_MAINNET_RPC_URL || '',
-    CONTRACT_ADDRESS: typeof process !== 'undefined' && process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || '0xA14B62b2EfC2fdA913A6c025705432c6B35c6Cf0',
+    CONTRACT_ADDRESS: typeof process !== 'undefined' && process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || '0xc4200F32add781F4d6a14D1bF6c270de0297Ba27',
     OWNER_ADDRESS: typeof process !== 'undefined' && process.env.NEXT_PUBLIC_OWNER_ADDRESS || '0x1A620655adbd8a4A25bF5F471a3D8F0a5d946570'
 };
 

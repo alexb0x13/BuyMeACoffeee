@@ -699,8 +699,8 @@ async function buyCoffee() {
             value: weiValueHex,
             // No function data - this will trigger the receive/fallback function
             data: '0x',
-            // Explicitly set gas limit to a low, safe value for basic ETH transfers
-            gas: '0xA410' // 42,000 gas in hex, standard for ETH transfers
+            // Explicitly set gas limit; higher to cover storage writes in receive()
+            gas: '0x30d40' // 200,000 gas in hex to cover receive() logic
         };
         
         console.log('Transaction details:', tx);

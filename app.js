@@ -665,84 +665,70 @@ async function buyCoffee() {
     showTransactionStatus(`Sending ${currentQuantity} ${coffeeInfo.name} coffee transaction...`, "loading");
     
     try {
-        // Calculate total price based on quantity but use exact Wei value for better precision
+        // Calculate total price based on quantity
         const unitPrice = coffeeInfo.price;
         const totalPrice = unitPrice * currentQuantity;
-        
-        // Convert to exact Wei without rounding
-        const bigValue = BigInt(Math.floor(totalPrice * 1000000000000000000));
-        const weiValueHex = '0x' + bigValue.toString(16);
-        
-        console.log(`Buying ${currentQuantity} ${coffeeInfo.name} coffee(s) for ${totalPrice} ETH`);
-        console.log(`Contract address: ${contractAddress}`);
-        console.log(`Wei amount (decimal): ${bigValue}`);
-        console.log(`Wei amount (hex): ${weiValueHex}`);
         
         // Convert coffee size from string to uint8 for the contract (Small=0, Medium=1, Large=2)
         const coffeeSize = selectedCoffeeSize === 'small' ? 0 : selectedCoffeeSize === 'medium' ? 1 : 2;
         
-        // Much simpler approach - use the legacy buyCoffee() function that requires no parameters
-        // This function simply accepts ETH with no encoding necessary
-        
-        console.log(`Calling basic buyCoffee function with ${totalPrice} ETH`);
+        console.log(`Buying ${currentQuantity} ${coffeeInfo.name} coffee(s) for ${totalPrice} ETH`);
         console.log(`Contract address: ${contractAddress}`);
-        
-        // Debug transaction details
-        console.log(`Current account: ${currentAccount}`);
         console.log(`Coffee size: ${coffeeSize} (${selectedCoffeeSize})`);
         console.log(`Quantity: ${currentQuantity}`);
         console.log(`Total price in ETH: ${totalPrice}`);
-        console.log(`Total price in Wei (hex): ${weiValueHex}`);
         
-        // IMPORTANT: Since we're having issues with encoding, let's try the legacy function
-        // which doesn't need parameters, it just accepts ETH
+        // Use ethers.js to interact with the contract
+        // Create a provider and signer
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
         
-        // Create a properly formatted transaction to call buyCoffeeSimple(uint8,uint256)
-        // Function signature: buyCoffeeSimple(uint8 _size, uint256 _quantity)
-        // Function selector: 0x143c7161 (first 4 bytes of keccak256 hash of the function signature)
+        // Create a contract instance with minimal ABI
+        const minimalABI = [
+            {
+                "inputs": [
+                    {"internalType": "enum BuyMeCoffee.CoffeeSize", "name": "_size", "type": "uint8"},
+                    {"internalType": "uint256", "name": "_quantity", "type": "uint256"}
+                ],
+                "name": "buyCoffeeSimple",
+                "outputs": [],
+                "stateMutability": "payable",
+                "type": "function"
+            }
+        ];
         
-        // 1. Create the function selector
-        const functionSelector = '0x143c7161'; // buyCoffeeSimple(uint8,uint256)
+        const contract = new ethers.Contract(contractAddress, minimalABI, signer);
         
-        // 2. Encode the parameters
-        // coffeeSize needs to be padded to 32 bytes
-        const encodedCoffeeSize = coffeeSize.toString(16).padStart(64, '0');
-        // quantity needs to be padded to 32 bytes
-        const encodedQuantity = parseInt(currentQuantity).toString(16).padStart(64, '0');
-        
-        // 3. Combine function selector and encoded parameters
-        const data = `${functionSelector}${encodedCoffeeSize}${encodedQuantity}`;
-        
-        console.log('Function selector:', functionSelector);
-        console.log('Encoded coffee size:', encodedCoffeeSize);
-        console.log('Encoded quantity:', encodedQuantity);
-        console.log('Complete data:', data);
-        
-        // 4. Create the transaction object
-        const tx = {
-            from: currentAccount,
-            to: contractAddress,
-            value: weiValueHex,
-            data: data,
-            // Let MetaMask handle gas estimation
+        // Prepare transaction options with value
+        const options = { 
+            value: ethers.utils.parseEther(totalPrice.toString()),
+            gasLimit: window.CONFIG.DEFAULT_GAS_LIMIT || 100000
         };
         
-        console.log('Simplified transaction parameters:', JSON.stringify(tx, null, 2));
-        console.log('Attempting to send a direct ETH transfer to contract...');
+        console.log('Calling buyCoffeeSimple with ethers.js...');
+        console.log('Transaction options:', options);
         
-        console.log("Transaction:", tx);
-        
-        // Show a clear user message
+        // Show a user message
         alert(`You're about to send ${totalPrice} ETH (about $${ethToUSD(totalPrice)}) to the coffee contract. Please confirm the transaction in MetaMask.`);
         
-        // Send the transaction with minimal parameters
-        const txHash = await window.ethereum.request({
-            method: 'eth_sendTransaction',
-            params: [tx]
-        });
+        // Call buyCoffeeSimple function with proper parameters
+        const tx = await contract.buyCoffeeSimple(
+            coffeeSize,            // uint8 _size
+            currentQuantity,        // uint256 _quantity
+            options                 // transaction options with value
+        );
         
-        showTransactionStatus(`Thanks for the coffee! Transaction sent: ${txHash.substring(0, 10)}...`, "success");
-        console.log("Transaction hash:", txHash);
+        console.log('Transaction sent:', tx);
+        console.log('Transaction hash:', tx.hash);
+        
+        // Wait for transaction confirmation
+        showTransactionStatus(`Transaction sent! Waiting for confirmation...`, "loading");
+        
+        // Wait for the transaction to be mined
+        const receipt = await tx.wait(1); // wait for 1 confirmation
+        
+        console.log('Transaction confirmed:', receipt);
+        showTransactionStatus(`Thanks for the coffee! Transaction confirmed: ${tx.hash.substring(0, 10)}...`, "success");
         
         // Re-enable the buttons after transaction
         disableContractButtons(false);

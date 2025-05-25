@@ -705,21 +705,8 @@ async function buyCoffee() {
         
         console.log('Transaction details:', tx);
         
-        // Alert the user about potential contract issues and offer direct payment option
-        const useDirectWallet = confirm(
-            `WARNING: The contract may be having issues accepting payments.\n\n` +
-            `Would you prefer to send ${totalPrice} ETH directly to the owner's wallet instead of using the contract?\n\n` +
-            `• Click OK to send directly to the owner's wallet\n` +
-            `• Click Cancel to try the contract anyway`
-        );
-        
-        // If user chooses direct wallet payment, send to owner address instead
-        if (useDirectWallet) {
-            tx.to = window.CONFIG.OWNER_ADDRESS; // Send directly to owner
-            alert(`You're about to send ${totalPrice} ETH (about $${ethToUSD(totalPrice)}) directly to the owner's wallet. Please confirm in MetaMask.`);
-        } else {
-            alert(`You're about to send ${totalPrice} ETH (about $${ethToUSD(totalPrice)}) to the coffee contract. Please confirm in MetaMask.`);
-        }
+        // Show a user message
+        alert(`You're about to send ${totalPrice} ETH (about $${ethToUSD(totalPrice)}) to the coffee contract. Please confirm the transaction in MetaMask.`);
         
         // Use MetaMask's send transaction method directly
         const txHash = await window.ethereum.request({

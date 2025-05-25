@@ -170,4 +170,30 @@ contract BuyMeCoffee {
         (bool success, ) = owner.call{value: amount}("");
         require(success, "Failed to withdraw");
     }
+    
+    /**
+     * @dev Accepts plain ETH transfers and emits a NewCoffee event with default values
+     * This allows users to send ETH directly to the contract without calling a specific function
+     */
+    receive() external payable {
+        require(msg.value >= MINIMUM_COFFEE, "Amount sent is less than minimum coffee price");
+        
+        // Default to small coffee with quantity of 1
+        CoffeeSize size = CoffeeSize.Small;
+        uint256 quantity = 1;
+        
+        // Store only limited number of coffees to prevent DoS
+        if (coffees.length < MAX_STORED_COFFEES) {
+            coffees.push(Coffee(
+                msg.sender,
+                block.timestamp,
+                "Anonymous",
+                "Thanks for the coffee!",
+                size,
+                quantity
+            ));
+        }
+        
+        emit NewCoffee(msg.sender, block.timestamp, "Anonymous", "Thanks for the coffee!", size, quantity);
+    }
 }

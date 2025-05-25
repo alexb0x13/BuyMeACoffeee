@@ -691,14 +691,16 @@ async function buyCoffee() {
         console.log('Wei value:', weiValue.toString());
         console.log('Wei hex:', weiValueHex);
         
-        // Create a minimal transaction that just sends ETH to the contract
+        // Create a simple ETH transfer transaction to the contract
+        // Adding a specific gas limit to avoid estimation issues
         const tx = {
             from: currentAccount,
             to: contractAddress,
             value: weiValueHex,
-            // For contracts that need to know the size and quantity, we can
-            // include minimal data
-            data: '0x',  // Empty data will trigger the fallback function
+            // No function data - this will trigger the receive/fallback function
+            data: '0x',
+            // Explicitly set gas limit to a low, safe value for basic ETH transfers
+            gas: '0xA410' // 42,000 gas in hex, standard for ETH transfers
         };
         
         console.log('Transaction details:', tx);
